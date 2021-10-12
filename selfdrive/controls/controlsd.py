@@ -252,6 +252,9 @@ class Controls:
       if safety_mismatch or self.mismatch_counter >= 200:
         self.events.add(EventName.controlsMismatch)
 
+      if log.PandaState.FaultType.relayMalfunction in pandaState.faults:
+        self.events.add(EventName.relayMalfunction)
+
     if not self.sm['liveParameters'].valid:
       self.events.add(EventName.vehicleModelInvalid)
 
@@ -278,9 +281,6 @@ class Controls:
       self.events.add(EventName.posenetInvalid)
     if not self.sm['liveLocationKalman'].deviceStable:
       self.events.add(EventName.deviceFalling)
-    for pandaState in self.sm['pandaStates']:
-      if log.PandaState.FaultType.relayMalfunction in pandaState.faults:
-        self.events.add(EventName.relayMalfunction)
     planner_fcw = self.sm['longitudinalPlan'].fcw and self.enabled
     model_fcw = self.sm['modelV2'].meta.hardBrakePredicted and not CS.brakePressed
     if planner_fcw or model_fcw:
@@ -365,9 +365,8 @@ class Controls:
       self.mismatch_counter = 0
 
     # All pandas not in silent mode must have controlsAllowed when openpilot is enabled
-    for pandaState in self.sm['pandaStates']:
-      if pandaState.safetyModel != SafetyModel.silent and not pandaState.controlsAllowed and self.enabled:
-        self.mismatch_counter += 1
+    if any(map(lambda ps: ps.safetyModel != SafetyModel.silent and not ps.controlsAllowed and self.enabled, self.sm['pandaStates'])):
+      self.mismatch_counter += 1
 
     self.distance_traveled += CS.vEgo * DT_CTRL
 
