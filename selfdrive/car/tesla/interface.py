@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from cereal import car
-from selfdrive.car.tesla.values import CAR
+from panda import Panda
+from selfdrive.car.tesla.values import CANBUS, CAR
 from selfdrive.car import STD_CARGO_KG, gen_empty_fingerprint, scale_rot_inertia, scale_tire_stiffness, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 
@@ -10,7 +11,6 @@ class CarInterface(CarInterfaceBase):
   def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None):
     ret = CarInterfaceBase.get_std_params(candidate, fingerprint)
     ret.carName = "tesla"
-    ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.tesla)]
 
     # There is no safe way to do steer blending with user torque,
     # so the steering behaves like autopilot. This is not
@@ -18,7 +18,15 @@ class CarInterface(CarInterfaceBase):
     ret.dashcamOnly = True
 
     ret.steerControlType = car.CarParams.SteerControlType.angle
-    ret.openpilotLongitudinalControl = False
+
+    # Check if we have messages on an auxiliary panda, and that 0x2bf (DAS_control) is present on the AP powertrain bus
+    # If so, we assume that it is connected to the longitudinal harness.
+    if (CANBUS.autopilot_powertrain in fingerprint.keys()) and (0x2bf in fingerprint[CANBUS.autopilot_powertrain].keys()):
+      ret.openpilotLongitudinalControl = True
+      ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.tesla, 0), get_safety_config(car.CarParams.SafetyModel.tesla, Panda.FLAG_TESLA_LONG)]
+    else:
+      ret.openpilotLongitudinalControl = False
+      ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.tesla, 0)]
 
     ret.steerActuatorDelay = 0.1
     ret.steerRateCost = 0.5

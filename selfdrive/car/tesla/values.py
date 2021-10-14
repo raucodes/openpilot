@@ -30,9 +30,15 @@ DBC = {
 }
 
 class CANBUS:
+  # Lateral harness
   chassis = 0
-  autopilot = 2
   radar = 1
+  autopilot_chassis = 2
+
+  # Longitudinal harness
+  powertrain = 4
+  private = 5
+  autopilot_powertrain = 6
 
 GEAR_MAP = {
   "DI_GEAR_INVALID": car.CarState.GearShifter.unknown,

@@ -46,7 +46,7 @@ class CarController():
       # Spam every possible counter value, otherwise it might not be accepted
       for counter in range(16):
         can_sends.append(self.tesla_can.create_action_request(CS.msg_stw_actn_req, cruise_cancel, CANBUS.chassis, counter))
-        can_sends.append(self.tesla_can.create_action_request(CS.msg_stw_actn_req, cruise_cancel, CANBUS.autopilot, counter))
+        can_sends.append(self.tesla_can.create_action_request(CS.msg_stw_actn_req, cruise_cancel, CANBUS.autopilot_chassis, counter))
 
     # TODO: HUD control
 

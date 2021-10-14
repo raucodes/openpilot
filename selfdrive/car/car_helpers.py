@@ -131,8 +131,11 @@ def fingerprint(logcan, sendcan):
       # and VIN query response.
       # Include bus 2 for toyotas to disambiguate cars using camera messages
       # (ideally should be done for all cars but we can't for Honda Bosch)
-      if can.src in range(0, 4):
+      if can.src < 128:
+        if can.src not in finger:
+          finger[can.src] = {}
         finger[can.src][can.address] = len(can.dat)
+
       for b in candidate_cars:
         if (can.src == b or (only_toyota_left(candidate_cars[b]) and can.src == 2)) and \
            can.address < 0x800 and can.address not in [0x7df, 0x7e0, 0x7e8]:
