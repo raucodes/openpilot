@@ -15,9 +15,15 @@ class CarInterface(CarInterfaceBase):
     # There is no safe way to do steer blending with user torque,
     # so the steering behaves like autopilot. This is not
     # how openpilot should be, hence dashcamOnly
-    ret.dashcamOnly = True
+    #ret.dashcamOnly = True
 
     ret.steerControlType = car.CarParams.SteerControlType.angle
+
+    # Set kP and kI to 0 over the whole speed range to have the planner accel as actuator command
+    ret.longitudinalTuning.kpBP = [0]
+    ret.longitudinalTuning.kpV = [1]
+    ret.longitudinalTuning.kiBP = [0]
+    ret.longitudinalTuning.kiV = [1]
 
     # Check if we have messages on an auxiliary panda, and that 0x2bf (DAS_control) is present on the AP powertrain bus
     # If so, we assume that it is connected to the longitudinal harness.
