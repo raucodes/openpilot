@@ -37,13 +37,13 @@ class CarController():
     can_sends.append(self.tesla_can.create_steering_control(apply_angle, lkas_enabled, frame))
 
     # Longitudinal control
-    if self.CP.openpilotLongitudinalControl:
+    if self.CP.openpilotLongitudinalControl and ((frame % 4) == 0):
       target_accel = actuators.accel
-      target_speed = CS.out.vEgo + (target_accel * CarControllerParams.ACCEL_TO_SPEED_MULTIPLIER)
+      target_speed = max(CS.out.vEgo + (target_accel * CarControllerParams.ACCEL_TO_SPEED_MULTIPLIER), 0)
       max_accel = ACCEL_MAX_ISO if target_accel < 0 else target_accel
       min_accel = ACCEL_MIN_ISO if target_accel > 0 else target_accel
 
-      can_sends.append(self.tesla_can.create_longitudinal_command(lkas_enabled, target_speed, min_accel, max_accel, frame))
+      can_sends.append(self.tesla_can.create_longitudinal_command(lkas_enabled, target_speed, min_accel, max_accel, frame // 4))
 
     # Cancel on user steering override, since there is no steering torque blending
     if hands_on_fault:

@@ -66,5 +66,5 @@ class CarControllerParams:
   RATE_LIMIT_DOWN = AngleRateLimit(speed_points=[0., 5., 15.], max_angle_diff_points=[5., 3.5, 0.4])
   JERK_LIMIT_MAX = 15
   JERK_LIMIT_MIN = -15
-  ACCEL_TO_SPEED_MULTIPLIER = 10
+  ACCEL_TO_SPEED_MULTIPLIER = 3
 
