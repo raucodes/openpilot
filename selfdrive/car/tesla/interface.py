@@ -29,7 +29,10 @@ class CarInterface(CarInterfaceBase):
     # If so, we assume that it is connected to the longitudinal harness.
     if (CANBUS.autopilot_powertrain in fingerprint.keys()) and (0x2bf in fingerprint[CANBUS.autopilot_powertrain].keys()):
       ret.openpilotLongitudinalControl = True
-      ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.tesla, 0), get_safety_config(car.CarParams.SafetyModel.tesla, Panda.FLAG_TESLA_LONG)]
+      ret.safetyConfigs = [
+        get_safety_config(car.CarParams.SafetyModel.tesla, Panda.FLAG_TESLA_LONG_CONTROL),
+        get_safety_config(car.CarParams.SafetyModel.tesla, Panda.FLAG_TESLA_LONG_CONTROL | Panda.FLAG_TESLA_POWERTRAIN),
+      ]
     else:
       ret.openpilotLongitudinalControl = False
       ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.tesla, 0)]

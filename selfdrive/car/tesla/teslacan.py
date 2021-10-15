@@ -5,9 +5,9 @@ from selfdrive.car.tesla.values import CANBUS, CarControllerParams
 
 
 class TeslaCAN:
-  def __init__(self, packer, longitudinal_packer):
+  def __init__(self, packer, pt_packer):
     self.packer = packer
-    self.longitudinal_packer = longitudinal_packer
+    self.pt_packer = pt_packer
     self.crc = crcmod.mkCrcFun(0x11d, initCrc=0x00, rev=False, xorOut=0xff)
 
   @staticmethod
@@ -40,7 +40,7 @@ class TeslaCAN:
     values["CRC_STW_ACTN_RQ"] = self.crc(data[:7])
     return self.packer.make_can_msg("STW_ACTN_RQ", bus, values)
 
-  def create_longitudinal_command(self, enabled, speed, min_accel, max_accel, frame):
+  def create_longitudinal_commands(self, enabled, speed, min_accel, max_accel, cnt):
     values = {
       "DAS_setSpeed": speed * CV.MS_TO_KPH,
       "DAS_accState": 4 if enabled else 0,
@@ -49,9 +49,12 @@ class TeslaCAN:
       "DAS_jerkMax": CarControllerParams.JERK_LIMIT_MAX,
       "DAS_accelMin": min_accel,
       "DAS_accelMax": max_accel,
-      "DAS_controlCounter": (frame % 8),
+      "DAS_controlCounter": (cnt % 8),
     }
 
-    data = self.longitudinal_packer.make_can_msg("DAS_control", CANBUS.powertrain, values)[2]
-    values["DAS_controlChecksum"] = self.checksum(0x2bf, data[:3])
-    return self.longitudinal_packer.make_can_msg("DAS_control", CANBUS.powertrain, values)
+    messages = []
+    for packer, addr, bus in [(self.packer, 0x2b9, CANBUS.chassis), (self.pt_packer, 0x2bf, CANBUS.powertrain)]:
+      data = packer.make_can_msg("DAS_control", bus, values)[2]
+      values["DAS_controlChecksum"] = self.checksum(addr, data[:3])
+      messages.append(packer.make_can_msg("DAS_control", bus, values))
+    return messages
