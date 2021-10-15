@@ -42,14 +42,14 @@ class TeslaCAN:
 
   def create_longitudinal_command(self, enabled, speed, min_accel, max_accel, frame):
     values = {
-      "DAS_setSpeed": speed * CV.KPH_TO_MS,
+      "DAS_setSpeed": speed * CV.MS_TO_KPH,
       "DAS_accState": 4 if enabled else 0,
       "DAS_aebEvent": 0,
       "DAS_jerkMin": CarControllerParams.JERK_LIMIT_MIN,
       "DAS_jerkMax": CarControllerParams.JERK_LIMIT_MAX,
       "DAS_accelMin": min_accel,
       "DAS_accelMax": max_accel,
-      "DAS_controlCounter": (frame % 16),
+      "DAS_controlCounter": (frame % 8),
     }
 
     data = self.longitudinal_packer.make_can_msg("DAS_control", CANBUS.powertrain, values)[2]
