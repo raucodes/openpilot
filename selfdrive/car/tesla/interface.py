@@ -21,9 +21,9 @@ class CarInterface(CarInterfaceBase):
 
     # Set kP and kI to 0 over the whole speed range to have the planner accel as actuator command
     ret.longitudinalTuning.kpBP = [0]
-    ret.longitudinalTuning.kpV = [1]
+    ret.longitudinalTuning.kpV = [0]
     ret.longitudinalTuning.kiBP = [0]
-    ret.longitudinalTuning.kiV = [1]
+    ret.longitudinalTuning.kiV = [0]
 
     # Check if we have messages on an auxiliary panda, and that 0x2bf (DAS_control) is present on the AP powertrain bus
     # If so, we assume that it is connected to the longitudinal harness.
