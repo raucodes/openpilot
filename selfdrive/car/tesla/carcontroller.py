@@ -44,7 +44,7 @@ class CarController():
       max_accel = ACCEL_MAX_ISO if target_accel < 0 else target_accel
       min_accel = ACCEL_MIN_ISO if target_accel > 0 else target_accel
 
-      can_sends.extend(self.tesla_can.create_longitudinal_commands(lkas_enabled, target_speed, min_accel, max_accel, self.long_control_counter))
+      can_sends.extend(self.tesla_can.create_longitudinal_commands(CS.acc_state, target_speed, min_accel, max_accel, self.long_control_counter))
       self.long_control_counter += 1
 
     # Cancel on user steering override, since there is no steering torque blending

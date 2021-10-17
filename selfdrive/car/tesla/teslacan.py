@@ -40,11 +40,11 @@ class TeslaCAN:
     values["CRC_STW_ACTN_RQ"] = self.crc(data[:7])
     return self.packer.make_can_msg("STW_ACTN_RQ", bus, values)
 
-  def create_longitudinal_commands(self, enabled, speed, min_accel, max_accel, cnt):
+  def create_longitudinal_commands(self, acc_state, speed, min_accel, max_accel, cnt):
     messages = []
     values = {
       "DAS_setSpeed": speed * CV.MS_TO_KPH,
-      "DAS_accState": 4 if enabled else 0,
+      "DAS_accState": acc_state,
       "DAS_aebEvent": 0,
       "DAS_jerkMin": CarControllerParams.JERK_LIMIT_MIN,
       "DAS_jerkMax": CarControllerParams.JERK_LIMIT_MAX,
