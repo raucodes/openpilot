@@ -41,19 +41,20 @@ class TeslaCAN:
     return self.packer.make_can_msg("STW_ACTN_RQ", bus, values)
 
   def create_longitudinal_commands(self, enabled, speed, min_accel, max_accel, cnt):
-    values = {
-      "DAS_setSpeed": speed * CV.MS_TO_KPH,
-      "DAS_accState": 4 if enabled else 0,
-      "DAS_aebEvent": 0,
-      "DAS_jerkMin": CarControllerParams.JERK_LIMIT_MIN,
-      "DAS_jerkMax": CarControllerParams.JERK_LIMIT_MAX,
-      "DAS_accelMin": min_accel,
-      "DAS_accelMax": max_accel,
-      "DAS_controlCounter": (cnt % 8),
-    }
-
     messages = []
     for packer, addr, bus in [(self.packer, 0x2b9, CANBUS.chassis), (self.pt_packer, 0x2bf, CANBUS.powertrain)]:
+      values = {
+        "DAS_setSpeed": speed * CV.MS_TO_KPH,
+        "DAS_accState": 4 if enabled else 0,
+        "DAS_aebEvent": 0,
+        "DAS_jerkMin": CarControllerParams.JERK_LIMIT_MIN,
+        "DAS_jerkMax": CarControllerParams.JERK_LIMIT_MAX,
+        "DAS_accelMin": min_accel,
+        "DAS_accelMax": max_accel,
+        "DAS_controlCounter": (cnt % 8),
+        "DAS_controlChecksum": 0,
+      }
+
       data = packer.make_can_msg("DAS_control", bus, values)[2]
       values["DAS_controlChecksum"] = self.checksum(addr, data[:3])
       messages.append(packer.make_can_msg("DAS_control", bus, values))
