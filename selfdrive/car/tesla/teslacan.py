@@ -42,7 +42,7 @@ class TeslaCAN:
 
   def create_longitudinal_commands(self, enabled, speed, min_accel, max_accel, cnt):
     messages = []
-    for packer, addr, bus in [(self.packer, 0x2b9, CANBUS.chassis), (self.pt_packer, 0x2bf, CANBUS.powertrain)]:
+    for packer, bus in [(self.packer, CANBUS.chassis), (self.pt_packer, CANBUS.powertrain)]:
       values = {
         "DAS_setSpeed": speed * CV.MS_TO_KPH,
         "DAS_accState": 4 if enabled else 0,
@@ -56,6 +56,6 @@ class TeslaCAN:
       }
 
       data = packer.make_can_msg("DAS_control", bus, values)[2]
-      values["DAS_controlChecksum"] = self.checksum(addr, data[:3])
+      values["DAS_controlChecksum"] = self.checksum(0x2b9, data[:3])
       messages.append(packer.make_can_msg("DAS_control", bus, values))
     return messages
