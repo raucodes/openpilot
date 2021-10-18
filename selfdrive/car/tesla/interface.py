@@ -24,6 +24,9 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpV = [0]
     ret.longitudinalTuning.kiBP = [0]
     ret.longitudinalTuning.kiV = [0]
+    ret.stopAccel = 0.0
+    ret.startAccel = 0.0
+    ret.longitudinalActuatorDelayUpperBound = 0.5 # s
 
     # Check if we have messages on an auxiliary panda, and that 0x2bf (DAS_control) is present on the AP powertrain bus
     # If so, we assume that it is connected to the longitudinal harness.
