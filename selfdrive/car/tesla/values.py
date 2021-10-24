@@ -64,7 +64,7 @@ BUTTONS = [
 class CarControllerParams:
   RATE_LIMIT_UP = AngleRateLimit(speed_points=[0., 5., 15.], max_angle_diff_points=[5., .8, .15])
   RATE_LIMIT_DOWN = AngleRateLimit(speed_points=[0., 5., 15.], max_angle_diff_points=[5., 3.5, 0.4])
-  JERK_LIMIT_MAX = 5
-  JERK_LIMIT_MIN = -5
+  JERK_LIMIT_MAX = 8
+  JERK_LIMIT_MIN = -8
   ACCEL_TO_SPEED_MULTIPLIER = 3
 
